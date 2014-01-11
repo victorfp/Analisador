@@ -3,10 +3,27 @@ package ufs.br.funcional;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/*
+ * Class-name: Automato
+ * version: 2.1.3
+ * date: 21/12/2013
+ * last-modifed: 11/01/2014
+ * Autor: Victor Ferreira Pereira
+ * Description: Classe que representa o Automato, porem nao possui
+ * 				o alfabeto(sigma), pois foi especficado que o o alfabeto
+ * 				seria somente 0 e 1.
+ * 				Fica estabelicido tambem que o elemento da posicao 0
+ * 				do conjunto de Estados(Q) é o estado inicial.
+ * 
+ * */
+
 public class Automato {
 	
+	//Conjunto de Estados Q
 	private ArrayList<Estado> q = new ArrayList<>();
+	//Conjunto de Estados Finais F
 	private ArrayList<Estado> f = new ArrayList<>();
+	//Funcao de Transicao
 	private ArrayList<Transicao> transicoes = new ArrayList<>();
 	
 	public Automato() {
@@ -24,6 +41,17 @@ public class Automato {
 	
 	public ArrayList<Transicao> getTransicoes() {
 		return transicoes;
+	}
+	
+	public Estado getEstado(Estado e){
+		Estado t = new Estado();
+		for (int i = 0; i < q.size(); i++) {
+			if (q.get(i).getId() == e.getId() && q.get(i).getLabel().equals(e.getLabel())){
+				t = q.get(i);
+				break;
+			}
+		}
+		return t;
 	}
 	
 	/* ADD Estados */
@@ -50,7 +78,17 @@ public class Automato {
 		transicoes.add(t);
 	}
 	
-	/* FindAll */
+	/* 
+	 * metodo: FindAll 
+	 * objetivo: busca todas as possibilidades de transicoes 
+	 * 			 de um estado.
+	 * Paraemtros: - Um Estado "e": retorna todas as transicoes em
+	 * 				 que "e" é origem
+	 *             - Um Estado "e" e um simbolo: retorna todas as 
+	 *               transicoes em que "e" é origem com o simbolo.
+	 *             - Um simbolo: retorna todas as transcoes com este 
+	 *               simbolo.
+	 * */
 	public ArrayList<Transicao> findAll(Estado e){
 		ArrayList<Transicao> r = new ArrayList<>();
 		Iterator<Transicao> it = transicoes.iterator();
@@ -87,8 +125,15 @@ public class Automato {
 		return r;
 	}
 
+	/* 
+	 * metodo: ALCANCABILIDADE 
+	 * objetivo: calcular a alcancabilidade de um Estado "e" com
+	 * 			 transicoes vazias(Epsilon).
+	 * parametros: - Um Estado: retorna o conjunto de estados 
+	 *   			 alcancaveis por transicao vazia.          
+	 * 
+	 * */
 	
-	/* FECHAMENTO - e */
 	public ArrayList<Estado> alcancabilidade(Estado e){
 		ArrayList<Estado> alcancaveis = new ArrayList<>();
 		ArrayList<Transicao> fila = findAll(e,Operacao.EPSILON);
@@ -103,37 +148,43 @@ public class Automato {
 		return alcancaveis;
 	}
 	
-	public ArrayList<Estado> alcancabilidade(Estado e, Character simbolo){
-		ArrayList<Estado> alcancaveis = new ArrayList<>();
-		ArrayList<Transicao> fila = findAll(e,simbolo);
-		
-		while(!fila.isEmpty()){
-			if (!alcancaveis.contains(fila.get(0).getDestino())){
-				alcancaveis.add(fila.get(0).getDestino());
-				fila.addAll(findAll(fila.get(0).getDestino(),simbolo));
-			}
-			fila.remove(0);
-		}
-		return alcancaveis;
+	/* 
+	 * metodo: UNIAO 
+	 * objetivo: Unir dois conjutos de Estados disjuntos.
+	 * parametros: - Dois Conjuntos de Estado: retorna o conjunto
+	 * 				 de Estados referente a uniao deles.
+	 * 
+	 * */
+	
+	public ArrayList<Estado> uniao(ArrayList<Estado> a, ArrayList<Estado> b){
+		ArrayList<Estado> iguais = new ArrayList<>();
+		ArrayList<Estado> r = new ArrayList<>();
+		r.addAll(a);
+		r.addAll(b);
+		iguais.addAll(a);
+		iguais.retainAll(b);
+		r.removeAll(iguais);
+		r.addAll(iguais);
+		return r;
 	}
+	
+	/* 
+	 * metodo: FECHAMENTO - e 
+	 * objetivo: calcular o fechamento transitivo vazio de um 
+	 *           Estado "e".
+	 * parametros: - Um Estado: retorna o conjunto de estados 
+	 *   			 referente ao fechamento-e de "e".
+	 *   		   - Um conjunto de Estados: retorna o conjunto
+	 *   			 de estados referente a uniao do fechamento
+	 *   			 de todos os estados do conjunto passado como
+	 *    	     	 parametro.          
+	 * 
+	 * */
 	
 	public ArrayList<Estado> fechamento(Estado e){
 		ArrayList<Estado> r = new ArrayList<>();
 		r.add(e);
 		r.addAll(alcancabilidade(e));
-		return r;
-	}
-	
-	public ArrayList<Estado> uniao(ArrayList<Estado> a, ArrayList<Estado> b){
-		ArrayList<Estado> r = new ArrayList<>();
-		Iterator<Estado> it = b.iterator();
-		r.addAll(a);
-		while(it.hasNext()){
-			Estado e = it.next();
-			if (!b.contains(e)){
-				r.add(e);
-			}
-		}
 		return r;
 	}
 	
@@ -147,14 +198,18 @@ public class Automato {
 		}
 		return r;
 	}
-	
-	public ArrayList<Estado> fechamento(Estado e, Character simbolo){
-		ArrayList<Estado> r = new ArrayList<>();
-		r.addAll(alcancabilidade(e, simbolo));
-		r.addAll(alcancabilidade(e));
-		return r;
-	}
 
+	/* 
+	 * metodo: MOVIMENTO 
+	 * objetivo: realizar o movimento de um conjunto de Estado com
+	 * 			 um simbolo.
+	 * parametros: - Um Conjunto Estado e um simbolo: retorna o conjunto
+	 *  			 de estados referente a uniao de estados cujo o
+	 *  			 conjunto se direciona com o simbolo passado como
+	 *               paramentro.
+	 * 
+	 * */
+	
 	public ArrayList<Estado> movimento(ArrayList<Estado> estado, Character simbolo){
 		ArrayList<Estado> novos = new ArrayList<>();
 		Iterator<Estado> it = estado.iterator();
@@ -172,6 +227,14 @@ public class Automato {
 		return novos;
 	}
 	
+	/* 
+	 * metodo: Existe 
+	 * objetivo: Verificar se um Estado existe em Q
+	 * parametros: - Um Estado: retorna verdadeiro se o Estado existir
+	 *  			 senao retorna falso.
+	 * 
+	 * */
+	
 	public boolean existe(Estado e){
 		boolean flag = false;
 		Iterator<Estado> it = q.iterator();
@@ -185,4 +248,53 @@ public class Automato {
 		return flag;
 	}
 	
+	/* 
+	 * metodo: Existe Transicao 
+	 * objetivo: Verificar se uma Transicao existe em Transicoes
+	 * parametros: - Um Estado: retorna verdadeiro se o Estado existir
+	 *  			 senao retorna falso.
+	 * 
+	 * */
+	
+	public boolean existe(Estado o, Estado d, Character s){
+		boolean flag = false;
+		Iterator<Transicao> it = transicoes.iterator();
+		while(it.hasNext()){
+			Transicao a = it.next();
+			if (a.getOrigem().equals(o) && a.getDestino().equals(d) && a.getSimbolo().equals(s)){
+				flag = true;
+				break;
+			}
+		}
+		return flag;
+	}
+	
+	public boolean isFinal(Estado e){
+		if (f.contains(e)){
+			return true;
+		}
+		else{
+			return false;
+			}
+	}
+	
+	public boolean validar(String palavra){
+		Estado atual = q.get(0);
+		ArrayList<Transicao> pos = new ArrayList<>();
+		boolean flag = false;
+		for (int i = 0; i < palavra.length(); i++) {
+			pos = findAll(atual,palavra.charAt(i));
+			if (!pos.isEmpty()){
+				atual = pos.get(0).getDestino();
+			}
+			if (isFinal(atual)){
+				flag = true;
+			}
+			else{
+				flag = false;
+			}
+		}
+		
+		return flag;
+	}
 }

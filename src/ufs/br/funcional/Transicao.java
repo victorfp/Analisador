@@ -1,5 +1,17 @@
 package ufs.br.funcional;
 
+/*
+ * Class-name: Transicao
+ * version: 1.0.3
+ * date: 21/12/2013
+ * last-modifed: 04/01/2014
+ * Autor: Victor Ferreira Pereira
+ * Description: Funcao de Transicao do Automato, onde será
+ * 				guardado o Estado de Origem, o Estado de Destino
+ * 				e o Simbolo.
+ * 
+ * */
+
 public class Transicao {
 
 	private Estado origem;

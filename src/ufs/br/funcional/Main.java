@@ -7,25 +7,35 @@ public class Main {
 	public static void main(String[] args) {
 		
 		Automato a = new Automato();
+		Automato b = new Automato();
+		
 		a.addEstado(new Estado(0));
 		a.addEstado(new Estado(1));
-		a.addEstado(new Estado(2));
-
-		a.addEstadoFinal(a.getQ().get(2));
+		a.addEstadoFinal(a.getQ().get(1));
 		
-		a.addTransicao(a.getQ().get(0), a.getQ().get(0), '0');
-		a.addTransicao(a.getQ().get(0), a.getQ().get(1), Operacao.EPSILON);
-		a.addTransicao(a.getQ().get(1), a.getQ().get(1), '1');
-		a.addTransicao(a.getQ().get(1), a.getQ().get(2), Operacao.EPSILON);
-		a.addTransicao(a.getQ().get(2), a.getQ().get(2), '0');
+		b.addEstado(new Estado(0));
+		b.addEstado(new Estado(1));
+		b.addEstadoFinal(b.getQ().get(1));
+		
+		a.addTransicao(a.getQ().get(0), a.getQ().get(1), '0');
+		b.addTransicao(b.getQ().get(0), b.getQ().get(1), '1');
 		Construcao c = new Construcao();
-		Automato r = c.equalAF2AFN(a);
-		Iterator<Estado> it = r.getQ().iterator();
+		Automato r = c.equalAF2AFN(Operacao.uniao(a,b));
+		//r = c.equalAFN2AFD(r);
+		Iterator<Transicao> it = r.getTransicoes().iterator();
+		
 		while(it.hasNext()){
-			Estado t = it.next();
-			System.out.println("o: "+t.getLabel());
+			Transicao t = it.next();
+			System.out.println("o: "+t.getOrigem().getLabel()+" d: "+t.getDestino().getLabel()+" s: "+t.getSimbolo());
 		}
 		
+		Iterator<Estado> it2 = r.getF().iterator();
+		while(it2.hasNext()){
+			Estado t = it2.next();
+			System.out.println("q: "+t.getLabel());
+		}
+		ER e = new ER("0+1.0");
+		System.out.println("ER: "+r.validar("01"));
 	}
 	
 }

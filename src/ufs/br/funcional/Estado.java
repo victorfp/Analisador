@@ -1,5 +1,15 @@
 package ufs.br.funcional;
 
+/*
+ * Class-name: Estado
+ * version: 1.0.0
+ * date: 21/12/2013
+ * last-modifed: 23/12/2013
+ * Autor: Victor Ferreira Pereira
+ * Description: Classe que representa os Estados do Automato
+ * 
+ * */
+
 public class Estado {
 
 	private int id;
