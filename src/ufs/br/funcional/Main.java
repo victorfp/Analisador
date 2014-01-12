@@ -38,6 +38,7 @@ public class Main {
 		Construcao c = new Construcao();
 		ER er = new ER(leitura.get(0));
 		Automato r = c.construir(er);
+		r = c.equalAF2AFN(r);
 		for (int i = 1; i < leitura.size(); i++) {
 			if(r.validar(leitura.get(i))){
 				escrita.add("1");

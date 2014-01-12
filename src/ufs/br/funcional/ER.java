@@ -40,15 +40,18 @@ public class ER {
 						}else{
 							elementos.add(""+er.charAt(i));
 						}
+					}else{
+						elementos.add(""+er.charAt(i));
 					}
 				}else{
 					if (er.charAt(i) == '('){
-						++i;
-						String data = "";
+						String data = "(";
+						i++;
 						while(er.charAt(i) != ')'){
 							data += er.charAt(i);
 							i++;
 						}
+						data+=")";
 						if (i < er.length()-1){
 							if (er.charAt(i+1) == '*'){
 								++i;

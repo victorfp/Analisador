@@ -226,12 +226,10 @@ public class Construcao {
 	}
 	
 	public Automato construir(String er){
-		Automato r = new Automato();
 		Automato a = new Automato(),b = new Automato();
 		Character op = '\0';
 		for (int i = 0; i < er.length(); i++) {
 			if (a.getAlpha().contains(er.charAt(i)) && op == '\0'){
-				//a = simples(er.charAt(i));
 				a = aplicaOperacao(null, null, er.charAt(i));
 			}
 			else{
@@ -246,12 +244,7 @@ public class Construcao {
 						a = aplicaOperacao(a, null, er.charAt(i));
 					}
 			}
-				
 		}
-	
-//		r = equalAF2AFN(a);
-		//r =equalAFN2AFD(r);
-		//Operacao.updateIndex(a);
 		return a;
 	}
 	
@@ -261,7 +254,32 @@ public class Construcao {
 		er.separar();
 		
 		for (int i = 0; i < er.getElementos().size(); i++) {
-			automatos.add(construir(er.getElementos().get(i)));
+			if (er.getElementos().get(i).startsWith("(")){
+				ArrayList<Automato> temp = new ArrayList<>();
+				ER expressao;
+				if (er.getElementos().get(i).endsWith("*")){
+					expressao = new ER(er.getElementos().get(i).substring(1, er.getElementos().get(i).length()-2));
+				}else{
+					expressao = new ER(er.getElementos().get(i).substring(1, er.getElementos().get(i).length()-1));
+				}
+				
+				expressao.separar();
+				for (int j = 0; j < expressao.getElementos().size(); j++) {
+					temp.add(construir(expressao.getElementos().get(j)));
+				}
+				Automato c = temp.get(0);
+				for (int j = 1; j < temp.size(); j++) {
+					Automato b = temp.get(j);
+					c = aplicaOperacao(c, b, expressao.getOperadores().get(j-1));
+				}
+				if (er.getElementos().get(i).endsWith("*")){
+					automatos.add(Operacao.estrela(c));
+				}else{
+				automatos.add(c);
+				}
+			}else{
+				automatos.add(construir(er.getElementos().get(i)));
+			}
 		}
 		Automato a = automatos.get(0);
 		for (int i = 1; i < automatos.size(); i++) {
