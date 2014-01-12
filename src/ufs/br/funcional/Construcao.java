@@ -101,45 +101,6 @@ public class Construcao {
 		return t;
 	}
 	
-	/*
-	 * metodo: Criar Arvore
-	 * objeetivo: criar a arvore de execucao de um AFN
-	 * 
-	 * */
-	
-	public ArrayList<String> criarArvore(Automato a){
-		ArrayList<String> arvore = new ArrayList<>();
-		ArrayList<Estado> fecho = new ArrayList<>();
-		
-		//Adiociona o inicial, fechamento do estado inicial de a
-		arvore.add(montar(a.fechamento(a.getQ().get(0))));
-		int i = 0;
-		int pai = -1;
-		while(i < arvore.size()){
-			if  ((pai < 0)||(arvore.get(i) != "\0" && !arvore.get(i).equals(arvore.get(pai)))){
-				//realiza o movimento com '0'
-				fecho = a.movimento(extrair(a, arvore.get(i)), '0');
-				if (fecho.isEmpty()){
-					arvore.add("\0");
-				}else{
-					//se possui movimento, monta a string e adiciona na arvore.
-					arvore.add(montar(a.fechamento(fecho)));
-				}
-				//realiza o movimento com '1'
-				fecho = a.movimento(extrair(a, arvore.get(i)), '1');
-				if (fecho.isEmpty()){
-					arvore.add("\0");
-				}else{
-					//se possui movimento, monta a string e adiciona na arvore.
-					arvore.add(montar(a.fechamento(fecho)));
-				}
-				pai++;
-			}
-			i++;
-		}
-		return arvore;
-	}
-	
 	/* 
 	 * metodo: Atribur Finais
 	 * objeetivo: define como final os estado de a que possuem algum ID
@@ -166,52 +127,67 @@ public class Construcao {
 	 * */
 	
 	public Automato equalAF2AFN(Automato a){
-		Automato r = new Automato();
-		//criar a arvore de execucao da AFN
-		ArrayList<String> arvore  = criarArvore(a);
+		//a construcao da equivalencia de A será feita, utilizando a 
+		//tecnica de busca em largura.
 		
-		for (int i = 0; i < arvore.size()/2; i++) {
-			if (!arvore.get(i).equals("\0")){
-				Estado e = new Estado(arvore.get(i));
-				if (!r.existe(e)){
-					//se o estado nao existe cria-se o estado
+		Automato r = new Automato();
+		//fechamento transitivo vazio (Epsilon)
+		ArrayList<Estado> fecho = new ArrayList<>();
+		//conjunto de estados resultante do movimento com simbolo '0'
+		ArrayList<Estado> zero = new ArrayList<>();
+		//conjunto de estados resultante do movimento com simbolo '1'
+		ArrayList<Estado> um = new ArrayList<>();
+		//fila com os filhos(zero e um) do fechamento transtivo
+		ArrayList<ArrayList<Estado>> fila = new ArrayList<>();
+		//calcula o fechamento do estado inicial
+		fecho = a.fechamento(a.getQ().get(0));
+		fila.add(fecho);
+		while(!fila.isEmpty()){
+			fecho = fila.get(0);
+			Estado inicial = new Estado(montar(fecho));
+			//se os estado nao existir cria-se esse novo estado.
+			if (!r.existe(inicial))
+				r.addEstado(inicial);
+			else
+				inicial = r.getEstado(inicial);
+			//calcula os movimentos com 0 e 1
+			zero = a.movimento(fecho, '0');
+			um = a.movimento(fecho, '1');
+			if (!zero.isEmpty()){
+				//se possui movimento com 0 calcula o fechamento
+				fecho = a.fechamento(zero);
+				Estado e = new Estado(montar(fecho));
+				if (!r.existe(e))
+					//se o estado nao existe cria o estado
 					r.addEstado(e);
-				}else
-				{
-					//senao recuperar o estado
+				else
 					e = r.getEstado(e);
-				}
-				//recupera os movimentos '0' e '1'
-				String zero = arvore.get((i*2)+1);
-				String um = arvore.get((i*2)+2);
-				//se possuir movimentos com '0'
-				if (!zero.equals("\0")){
-					Estado x = new Estado(zero);
-					if (!r.existe(x)){
-						r.addEstado(x);
-					}else{
-						x = r.getEstado(x);
-					}
-					//adiciona a transicao '0'
-					r.addTransicao(e,x,'0');
-				}
-				//se possuir movimentos com '0'
-				if (!um.equals("\0")){
-					Estado x = new Estado(um);
-					if (!r.existe(x)){
-						r.addEstado(x);
-					}else{
-						x = r.getEstado(x);
-					}
-					//adiciona a transicao '1'
-					r.addTransicao(e,x,'1');
+				if (!r.existe(inicial, e, '0')){
+					//se a trasicao nao existe cria a transicao
+					//e adiciona o fechamento na fila
+					fila.add(fecho);
+					r.addTransicao(inicial, e, '0');
 				}
 			}
+			if (!um.isEmpty()){
+				fecho = a.fechamento(um);
+				
+				Estado e = new Estado(montar(fecho));
+				if (!r.existe(e))
+					//se o estado nao existe cria o estado
+					r.addEstado(e);
+				else
+					e = r.getEstado(e);
+				if (!r.existe(inicial, e, '1')){
+					//se a trasicao nao existe cria a transicao
+					//e adiciona o fechamento na fila
+					fila.add(fecho);
+					r.addTransicao(inicial, e, '1');
+				}
+			}
+			fila.remove(0);
 		}
-		//atribui os estados finais de r
 		atribuirFinais(r, a.getF());
-		
-		//atualiza os indices
 		Operacao.updateIndex(r);
 		return r;
 	}
@@ -223,62 +199,59 @@ public class Construcao {
 	 * */
 	
 	public Automato equalAFN2AFD(Automato a){
-		Automato r = new Automato();
-		ArrayList<ArrayList<Estado>> fila = new ArrayList<>();
-		ArrayList<Estado> mov = new ArrayList<>(), atual = new ArrayList<>();
-		r.addEstado(a.getQ().get(0));
-		int i = 0;
-		mov.add(a.getQ().get(0));
-		fila.add(mov);
-		while(i < fila.size()){
-			atual = fila.get(i);
-			Estado e0 = new Estado(montar(atual));
-			if (!r.existe(e0)){
-				r.addEstado(e0);
-			}else{
-				e0 = r.getEstado(e0);
+		Automato r = a;
+		Estado morto = new Estado("morto");
+		r.addEstado(morto);
+		r.addTransicao(morto,morto,'0');
+		r.addTransicao(morto,morto,'1');
+		Iterator<Estado> it = r.getQ().iterator();
+		while(it.hasNext()){
+			Estado e = it.next();
+			if (r.findAll(e, '0').isEmpty()){
+				r.addTransicao(e, morto, '0');
 			}
-			mov = a.movimento(fila.get(i), '0');
-			
-			Estado e = new Estado(montar(mov));
-			if (!r.existe(e)){
-				r.addEstado(e);
-			}else{
-				
-				e = r.getEstado(e);
+			if (r.findAll(e, '1').isEmpty()){
+				r.addTransicao(e, morto, '1');
 			}
-			if (mov.isEmpty()){
-				if (!r.existe(e0,e,'0')){
-					r.addTransicao(e0, e0, '0');
-				}
-			}else{
-				if (!r.existe(e0,e,'0')){
-					fila.add(mov);
-					r.addTransicao(e0, e, '0');
-				}
-			}
-			
-			mov = a.movimento(fila.get(i), '1');
-			
-			e = new Estado(montar(mov));
-			if (!r.existe(e)){
-				r.addEstado(e);
-			}else{
-				e = r.getEstado(e);
-			}
-			if (mov.isEmpty()){
-				if (!r.existe(e0,e,'1')){
-					r.addTransicao(e0, e0, '1');
-				}
-			}else{
-				if (!r.existe(e0,e,'1')){
-					fila.add(mov);
-					r.addTransicao(e0, e, '1');
-				}
-			}
-			i++;
 		}
-		atribuirFinais(r, a.getF());
+		Operacao.updateIndex(r);
+		return r;
+	}
+
+	public boolean isOperacao(Character c){
+		if (c.equals('.') || c.equals('+') || c.equals('*'))
+			return true;
+		else
+			return false;
+	}
+	
+	public Automato construir(String er){
+		Automato r = new Automato();
+		Automato a = new Automato(),b = new Automato();
+		Character op = '\0';
+		for (int i = 0; i < er.length(); i++) {
+			if (a.getAlpha().contains(er.charAt(i)) && op == '\0'){
+				//a = simples(er.charAt(i));
+				a = aplicaOperacao(null, null, er.charAt(i));
+			}
+			else{
+				if (op != '\0'){
+					b = aplicaOperacao(null, null, er.charAt(i));
+					a = aplicaOperacao(a, b, op);
+					op = '\0';
+				}else
+					if (isOperacao(er.charAt(i)) && er.charAt(i) != '*'){
+						op = er.charAt(i);
+					}else{
+						a = aplicaOperacao(a, null, er.charAt(i));
+					}
+			}
+				
+		}
+	
+		r = equalAF2AFN(a);
+		//r =equalAFN2AFD(r);
+		//Operacao.updateIndex(a);
 		return r;
 	}
 }

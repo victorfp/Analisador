@@ -20,7 +20,7 @@ public class Main {
 		a.addTransicao(a.getQ().get(0), a.getQ().get(1), '0');
 		b.addTransicao(b.getQ().get(0), b.getQ().get(1), '1');
 		Construcao c = new Construcao();
-		Automato r = c.equalAF2AFN(Operacao.uniao(a,b));
+		Automato r = c.construir("1.0*");
 		//r = c.equalAFN2AFD(r);
 		Iterator<Transicao> it = r.getTransicoes().iterator();
 		
@@ -33,9 +33,8 @@ public class Main {
 		while(it2.hasNext()){
 			Estado t = it2.next();
 			System.out.println("q: "+t.getLabel());
-		}
-		ER e = new ER("0+1.0");
-		System.out.println("ER: "+r.validar("01"));
+		}	
+		System.out.println("ER: "+r.validar("10"));
 	}
 	
 }

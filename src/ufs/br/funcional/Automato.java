@@ -25,9 +25,13 @@ public class Automato {
 	private ArrayList<Estado> f = new ArrayList<>();
 	//Funcao de Transicao
 	private ArrayList<Transicao> transicoes = new ArrayList<>();
+	//Albafeto
+	private ArrayList<Character> alpha = new ArrayList<>();
 	
 	public Automato() {
 		// TODO Auto-generated constructor stub
+		alpha.add('0');
+		alpha.add('1');
 	}
 	
 	/* GETTERS */
@@ -41,6 +45,10 @@ public class Automato {
 	
 	public ArrayList<Transicao> getTransicoes() {
 		return transicoes;
+	}
+	
+	public ArrayList<Character> getAlpha() {
+		return alpha;
 	}
 	
 	public Estado getEstado(Estado e){
@@ -283,9 +291,14 @@ public class Automato {
 		ArrayList<Transicao> pos = new ArrayList<>();
 		boolean flag = false;
 		for (int i = 0; i < palavra.length(); i++) {
-			pos = findAll(atual,palavra.charAt(i));
-			if (!pos.isEmpty()){
-				atual = pos.get(0).getDestino();
+			if(palavra.charAt(i) != 'E'){
+				pos = findAll(atual,palavra.charAt(i));
+				if (!pos.isEmpty()){
+					atual = pos.get(0).getDestino();
+				}else{
+					flag = false;
+					break;
+				}
 			}
 			if (isFinal(atual)){
 				flag = true;
