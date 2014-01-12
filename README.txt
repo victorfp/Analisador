@@ -4,7 +4,7 @@ Analisador
 Trabalho 01 - Linguagens Formais e Computabilidade - Victor Ferreira Pereira
 
 Autor(s): Victor Ferreira Pereira
-version: 1.2.4
+version: 1.0.5
 created: 15 dez 2013
 last-modified: 12 jan 2014
 
