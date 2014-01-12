@@ -307,7 +307,6 @@ public class Automato {
 				flag = false;
 			}
 		}
-		
 		return flag;
 	}
 }

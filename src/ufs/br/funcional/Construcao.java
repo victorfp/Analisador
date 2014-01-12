@@ -249,9 +249,27 @@ public class Construcao {
 				
 		}
 	
-		r = equalAF2AFN(a);
+//		r = equalAF2AFN(a);
 		//r =equalAFN2AFD(r);
 		//Operacao.updateIndex(a);
+		return a;
+	}
+	
+	public Automato construir(ER er){
+		Automato r = new Automato();
+		ArrayList<Automato> automatos = new ArrayList<>();
+		er.separar();
+		
+		for (int i = 0; i < er.getElementos().size(); i++) {
+			automatos.add(construir(er.getElementos().get(i)));
+		}
+		Automato a = automatos.get(0);
+		for (int i = 1; i < automatos.size(); i++) {
+			Automato b = automatos.get(i);
+			a = aplicaOperacao(a, b, er.getOperadores().get(i-1));
+		}
+		
+		r = equalAF2AFN(a);
 		return r;
 	}
 }

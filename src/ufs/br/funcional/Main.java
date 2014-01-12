@@ -1,40 +1,64 @@
 package ufs.br.funcional;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class Main {
 
 	public static void main(String[] args) {
-		
-		Automato a = new Automato();
-		Automato b = new Automato();
-		
-		a.addEstado(new Estado(0));
-		a.addEstado(new Estado(1));
-		a.addEstadoFinal(a.getQ().get(1));
-		
-		b.addEstado(new Estado(0));
-		b.addEstado(new Estado(1));
-		b.addEstadoFinal(b.getQ().get(1));
-		
-		a.addTransicao(a.getQ().get(0), a.getQ().get(1), '0');
-		b.addTransicao(b.getQ().get(0), b.getQ().get(1), '1');
+		String entrada = "C:\\Users\\Victor\\Desktop\\entrada.input";
+		String saida = "C:\\Users\\Victor\\Desktop\\saida.output";
+		ArrayList<String> leitura = new ArrayList<>();
+		ArrayList<String> escrita = new ArrayList<>();
+		try{
+			BufferedReader br = new BufferedReader(new FileReader(entrada));
+			String buffer;
+			while(br.ready()){
+				buffer = br.readLine();
+				if (buffer.length() == 0){
+					break;
+				}
+				else{
+					leitura.add(buffer);
+				}
+			}
+			br.close();
+		}catch(IOException e){
+			System.out.println("Arquivo nao encontrado");
+		}
 		Construcao c = new Construcao();
-		Automato r = c.construir("1.0*");
-		//r = c.equalAFN2AFD(r);
-		Iterator<Transicao> it = r.getTransicoes().iterator();
-		
-		while(it.hasNext()){
-			Transicao t = it.next();
-			System.out.println("o: "+t.getOrigem().getLabel()+" d: "+t.getDestino().getLabel()+" s: "+t.getSimbolo());
+		ER er = new ER(leitura.get(0));
+		Automato r = c.construir(er);
+		for (int i = 1; i < leitura.size(); i++) {
+			if(r.validar(leitura.get(i))){
+				escrita.add("1");
+			}else{
+				escrita.add("0");
+			}
+		}
+		try{
+			BufferedWriter bw = new BufferedWriter(new FileWriter(saida));
+			for (int i = 0; i < escrita.size(); i++) {
+				System.out.println(escrita.get(i));
+				bw.write(escrita.get(i)+"\n");
+			}
+			bw.close();
+		}catch(FileNotFoundException e){
+			System.out.println("Arquivo não encontrado!!");
+		}catch (IOException e) {
+			// TODO: handle exception
+			System.out.println("Erro na escrita");
 		}
 		
-		Iterator<Estado> it2 = r.getF().iterator();
-		while(it2.hasNext()){
-			Estado t = it2.next();
-			System.out.println("q: "+t.getLabel());
-		}	
-		System.out.println("ER: "+r.validar("10"));
 	}
 	
 }
