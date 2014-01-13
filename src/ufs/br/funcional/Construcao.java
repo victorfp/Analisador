@@ -283,8 +283,24 @@ public class Construcao {
 		}
 		Automato a = automatos.get(0);
 		for (int i = 1; i < automatos.size(); i++) {
-			Automato b = automatos.get(i);
-			a = aplicaOperacao(a, b, er.getOperadores().get(i-1));
+			if (i < er.getOperadores().size()){
+				if (!er.getOperadores().get(i-1).equals(er.getOperadores().get(i))){
+					System.out.println("nao igual");
+					Automato b = automatos.get(i);
+					Automato c = automatos.get(i+1);
+					b = aplicaOperacao(b, c, er.getOperadores().get(i));
+					a = aplicaOperacao(a, b, er.getOperadores().get(i-1));
+					i++;
+				}else{
+					System.out.println("igual");
+					Automato b = automatos.get(i);
+					a = aplicaOperacao(a, b, er.getOperadores().get(i-1));
+				}
+			}else{
+				Automato b = automatos.get(i);
+				a = aplicaOperacao(a, b, er.getOperadores().get(i-1));
+			}
+			
 		}
 		
 		r = equalAF2AFN(a);

@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import ufs.br.grafico.Principal;
+
 public class Main {
 
 	public static void main(String[] args) {
@@ -41,9 +43,9 @@ public class Main {
 		r = c.equalAF2AFN(r);
 		for (int i = 1; i < leitura.size(); i++) {
 			if(r.validar(leitura.get(i))){
-				escrita.add("1");
+				escrita.add(leitura.get(i)+" 1");
 			}else{
-				escrita.add("0");
+				escrita.add(leitura.get(i)+" 0");
 			}
 		}
 		try{
@@ -59,6 +61,8 @@ public class Main {
 			// TODO: handle exception
 			System.out.println("Erro na escrita");
 		}
+		
+		Principal p = new Principal();
 		
 	}
 	
