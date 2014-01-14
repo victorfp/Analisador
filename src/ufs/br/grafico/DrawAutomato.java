@@ -1,15 +1,21 @@
 package ufs.br.grafico;
 
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Insets;
 import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
 
 import ufs.br.funcional.Main;
 
 public class DrawAutomato extends JPanel{
 
 	private ArrayList<JLabel> estado = new ArrayList<>();
+	private JLabel inicial = new JLabel();
+	
 	
 	public DrawAutomato() {
 		// TODO Auto-generated constructor stub
@@ -27,9 +33,6 @@ public class DrawAutomato extends JPanel{
 			add(estado.get(i));
 		}
 		
-		for (int i = 0; i < estado.size(); i++) {
-			getComponent(i).move(getComponent(i).getX()*i*2, getComponent(i).getY());
-		}
 	}
 	
 	public void estados(){

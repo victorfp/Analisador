@@ -1,4 +1,4 @@
-Analisador
+﻿Analisador
 ==========
 
 Trabalho 01 - Linguagens Formais e Computabilidade - Victor Ferreira Pereira
@@ -19,42 +19,44 @@ deve ser lida da entrada padrão.
 
 2. Executar o Programa
 
-    Para executar o programa, basta apenas modificar as variaveis "entrada" e "saida",    
-na Classe Main, para o diretorio onde os arquivo estao localizados.
+    Para executar o programa, basta executar o arquivo analisador.jar.
 
-//diretorio do arquivo de entrada
-String entrada = path_name;
+3. Instrucoes Analisador.jar
 
-//diretorio em sera gerado a saida
-String saida = path_name;
+   Segue o passo a passo para geracao do automato e validacao das palavras no Ana-
+lisador.jar.
 
-    2.1 Formato da Entrada
-        
-        Como foi especificado, a primeira linha do arquivo será a Expressao Regular, as
-    demais serão as palavras que serão validadas.
-    Exemplo
-    File.input:
-    
-    1. (0.1)*
-    2. 111010
-    3. 010101
-    4. E
-    5. 00100110
-    .
-    .
-    .
-    
-    2.2 Formato da Saida
-    
-        na saida será escrita se a palavra foi aceita ou nao. Se foi aceita, entao será 
-    escrito "1", caso contrario escreve-se "0".
-    Exemplo:
-    File.output
-    1. 0
-    2. 1
-    3. 1
-    4. 0
-    .
-    .
-    .
-    
+   Passo 1: Gerar o Automato
+	
+	Para se gerar o Automato, deve inserir a Expressão Regular(ER) no campo de texto,
+   e clicar no botão gerar Automato.
+   
+   IMPORTANTE: As ERs devem seguir o padrão especificado.
+	       Operacoes suportadas: concatenacao(.), uniao(+) e Fecho-kleene ou estrela(*).
+
+   Passo 2: Inserir Palavras para validacao
+	
+	As palavras devem ser inseridas na Area de Texto. UMA PALAVRA POR LINHA! As palavras
+   não devem ser separadas pos vírgula(,) ou qualquer outro caracter especal.
+
+   Passo 3: validacao
+
+	Para validar as palavras inseridas no passo anterior, basta clicar no botão validar.
+   será apresentado como resultado, na area de texto, o seguinte padrao de saida:
+
+   result: palavra
+
+   onde, result é o resultado da validacao e palavra é a palavra avaliada. Exemplo:
+   Para a ER = 1.0
+
+   0: 1001
+   1: 10
+   0: 0
+   0: 1
+   .
+   .
+   .
+
+
+   Para gerar outro Automato para um ER diferente, deve-se apenas clicar no botão "limpar" e 
+   realizar os passos acima citados.
