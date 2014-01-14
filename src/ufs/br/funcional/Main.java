@@ -16,6 +16,8 @@ import ufs.br.grafico.Principal;
 
 public class Main {
 
+	public static Automato automato = new Automato();
+	
 	public static void main(String[] args) {
 		String entrada = "C:\\Users\\Victor\\Desktop\\entrada.input";
 		String saida = "C:\\Users\\Victor\\Desktop\\saida.output";
