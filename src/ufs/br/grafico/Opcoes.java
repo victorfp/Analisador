@@ -1,17 +1,15 @@
 package ufs.br.grafico;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -21,6 +19,10 @@ import ufs.br.funcional.Main;
 
 public class Opcoes extends JPanel{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JLabel er = new JLabel("Expressão Regular",JLabel.LEFT);
 	private JTextField er_edit = new JTextField();
 	private JButton btn_gerar = new JButton("Gerar");
@@ -28,7 +30,6 @@ public class Opcoes extends JPanel{
 	private JLabel palavras = new JLabel("Palavras");
 	private JTextArea ta = new JTextArea();
 	private JButton btn_validar = new JButton("Validar");
-	private JTable tabela = new JTable(1,2);
 	private JScrollPane scroll = new JScrollPane(ta);
 	
 	
@@ -59,11 +60,15 @@ public class Opcoes extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				String texto = er_edit.getText() ;
-				Construcao c = new Construcao();
-				Main.automato = c.construir(new ER(texto));
-				Principal.da.draw();
-				Principal.da.updateUI();
+				if (er_edit.getText().length() == 0){
+					JOptionPane.showMessageDialog(null, "Insira uma Expressao Regular");
+				}else{
+					String texto = er_edit.getText() ;
+					Construcao c = new Construcao();
+					Main.automato = c.construir(new ER(texto));
+					Principal.da.draw();
+					Principal.da.updateUI();
+				}
 			}
 		});
 		
@@ -85,25 +90,32 @@ public class Opcoes extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				ArrayList<String> palavras = new ArrayList<>();
 				
-				String texto = ta.getText() ;  
-				StringTokenizer st = new StringTokenizer(texto,"\n") ;  
+				if (Main.automato.getQ().isEmpty()){
+					System.out.println("entrei");
+					JOptionPane.showMessageDialog(null, "Automato não gerado");
+				}else{
 				
-				while (st.hasMoreTokens())   
-				{  
-				     String line = st.nextToken();  
-				     palavras.add(line);  
-				}
-				texto = "";
-				for (int i = 0; i < palavras.size(); i++) {
-					if (Main.automato.validar(palavras.get(i))){
-						texto += "1: "+palavras.get(i)+"\n";
-					}else{
-						texto+= "0: "+palavras.get(i)+"\n";
+					ArrayList<String> palavras = new ArrayList<>();
+					
+					String texto = ta.getText() ;  
+					StringTokenizer st = new StringTokenizer(texto,"\n") ;  
+					
+					while (st.hasMoreTokens())   
+					{  
+					     String line = st.nextToken();  
+					     palavras.add(line);  
 					}
+					texto = "";
+					for (int i = 0; i < palavras.size(); i++) {
+						if (Main.automato.validar(palavras.get(i))){
+							texto += "1: "+palavras.get(i)+"\n";
+						}else{
+							texto+= "0: "+palavras.get(i)+"\n";
+						}
+					}
+					ta.setText(texto);
 				}
-				ta.setText(texto);
 			}
 		});
 	}

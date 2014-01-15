@@ -86,21 +86,6 @@ public class Construcao {
 		return data;
 	}
 	
-	/*
-	 * metodo: Extrair
-	 * objetivo: extrai os estados com os IDs das string passada como
-	 * 			 paramentro.
-	 * 
-	 * */
-	
-	public ArrayList<Estado> extrair(Automato a,String arv){
-		ArrayList<Estado> t = new ArrayList<>();
-		for (int i = 0; i < arv.length(); i++) {
-			t.add(a.getQ().get(Integer.parseInt(""+arv.charAt(i))));
-		}
-		return t;
-	}
-	
 	/* 
 	 * metodo: Atribur Finais
 	 * objeetivo: define como final os estado de a que possuem algum ID
@@ -285,14 +270,12 @@ public class Construcao {
 		for (int i = 1; i < automatos.size(); i++) {
 			if (i < er.getOperadores().size()){
 				if (!er.getOperadores().get(i-1).equals(er.getOperadores().get(i))){
-					System.out.println("nao igual");
 					Automato b = automatos.get(i);
 					Automato c = automatos.get(i+1);
 					b = aplicaOperacao(b, c, er.getOperadores().get(i));
 					a = aplicaOperacao(a, b, er.getOperadores().get(i-1));
 					i++;
 				}else{
-					System.out.println("igual");
 					Automato b = automatos.get(i);
 					a = aplicaOperacao(a, b, er.getOperadores().get(i-1));
 				}
@@ -304,6 +287,7 @@ public class Construcao {
 		}
 		
 		r = equalAF2AFN(a);
+		r = equalAFN2AFD(r);
 		return r;
 	}
 }
