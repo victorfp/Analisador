@@ -2,10 +2,11 @@ package br.ufs.funcional.gramatica;
 
 import java.util.ArrayList;
 
-/**
- * <b>Classe Producao</b>
- * @author Victor Ferreira
- * @version 1.0
+/*
+ * class Producao
+ * autor: Victor Ferreira Pereira
+ * 
+ * descricao: Trata as producao de uma gramatica
  * 
  * */
 public class Producao {
@@ -22,9 +23,8 @@ public class Producao {
 	}
 
 	/**
-	 * 	<b>getVariavel</b>
-	 * 	<br>
-	 * 		Pega o simbola NAO-TERMINAL(Variavel) a direita.
+	 * 	getVariavel():<br>
+	 * 	Pega o simbola NAO-TERMINAL(Variavel) a direita.
 	 * 
 	 * @param none
 	 * @return Character
@@ -35,7 +35,7 @@ public class Producao {
 	}
 	
 	/**
-	 * 	<b>getBehavior</b>
+	 * 	getBehavior
 	 * 	<br>retorna a cadeia de caracter a esquerda da producao.
 	 * 		
 	 * @param none
@@ -50,7 +50,7 @@ public class Producao {
 	}
 	
 	/**
-	 * 	<b>isTerminal</b>
+	 * 	isTerminal
 	 * 	<br>verifica se um caracter é um simbolo TERMINAL.
 	 * 		
 	 * @param Character c
@@ -66,7 +66,7 @@ public class Producao {
 	}
 	
 	/**
-	 * 	<b>getTerminais</b>
+	 * 	getTerminais
 	 * 	<br>retorna todos os terminais da producao.
 	 * 		
 	 * @param none

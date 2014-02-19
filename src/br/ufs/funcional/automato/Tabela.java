@@ -4,6 +4,15 @@ import java.util.ArrayList;
 import br.ufs.funcional.gramatica.Gramatica;
 import br.ufs.funcional.gramatica.Producao;
 
+/*
+ * class Tabela
+ * autor: Victor Ferreira Pereira
+ * 
+ * descricao: tabela M[N,T] que relaciona um Nao-Terminal e um Terminal 
+ * 			  à uma producao P.
+ * 
+ * */
+
 public class Tabela {
 
 	private ArrayList<ArrayList<String>> tabela = new ArrayList<ArrayList<String>>();
@@ -21,6 +30,7 @@ public class Tabela {
 		this.gramatica = g;
 	}
 	
+	//getters
 	public ArrayList<ArrayList<String>> getTabela() {
 		return tabela;
 	}
@@ -33,6 +43,12 @@ public class Tabela {
 		return seguintes;
 	}
 	
+	/*
+	 * uniao
+	 * 
+	 * realiza a uniao entre duas listas.
+	 * 
+	 * */
 	public ArrayList<Character> uniao(ArrayList<Character> a, ArrayList<Character> b){
 		ArrayList<Character> r = new ArrayList<Character>();
 		ArrayList<Character> iguais = new ArrayList<Character>();
@@ -45,45 +61,45 @@ public class Tabela {
 		return r;
 	}
 	
-	public boolean pertence(String behavior,int k, int i){
-		for (int j = k; j < i-1; j++) {
-			ArrayList<Character> temp = primeiro(behavior.charAt(j));
-			if(temp.contains('E'))
-				return false;
-		}
-		return true;
-	}
-	
-	public boolean todosNaoTerminais(String behavior){
-		for (int j = 0; j < behavior.length(); j++) {
-			if(Producao.isTerminal(behavior.charAt(j)))
-				return false;
-		}
-		return true;
-	}
+	/*
+	 * primeiro
+	 * 
+	 * calcula o conjunto dos elementos primeiros para um caracter
+	 * 
+	 * */
 	
 	public ArrayList<Character> primeiro(Character c){
 		ArrayList<Character> primeiro = new ArrayList<Character>();
 		ArrayList<Producao> prod = new ArrayList<Producao>();
+		//pega todas as producao que 'c' produz, ou seja, sao do tipo 'c'->...
 		prod.addAll(gramatica.getProducoes(c));
 		boolean flag = false;
 		if (Producao.isTerminal(c)){
+			//caso seja terminal primero(c) = {c}
 			primeiro.add(c);
 		}else{
-			
+			//para cada producao que 'c' produz
 			for (int i = 0; i < prod.size(); i++) {
-				
+				//pega-se o lado direito da producao
 				String producao = prod.get(i).getBehavior();
+				//seta a flag para true
 				flag = true;
+				//para todos os caracteres do lado direito 
 				for (int j = 0; j < producao.length(); j++) {
+					//calcula o conjunto primeiro para ele
 					ArrayList<Character> p =  primeiro(producao.charAt(j));
+					//primeiro(c) = primeiro U primeiro(cj) - {E}
 					primeiro = uniao(primeiro, p);
 					primeiro.remove(new Character('E'));
 					if (!p.contains('E')){
+						//se o primeiro de cj nao contem E interrompe a execucao
+						//pois, existe um 'x' que nao deriva para 'E'(epsilon)
 						flag = false;
 						break;
 					}
 				}
+				//se todos os caracteres do lado direito derivam para epsilon, entao é adicionado
+				//'E' ao conjunto primeiro de c.
 				if (flag){
 					primeiro.add('E');
 				}
@@ -92,29 +108,42 @@ public class Tabela {
 		return primeiro;
 	}
 	
+	/*
+	 * primeiro
+	 * 
+	 * calcula o conjunto dos elementos primeiros para uma cadeia de caracter
+	 * 
+	 * */
 	public ArrayList<Character> primeiro(String s){
 		ArrayList<Character> primeiro = new ArrayList<Character>();
+		//calcula-se o conjunto primeiro para o primeiro caracter da cadeia
 		ArrayList<Character> p = primeiro(s.charAt(0));
-		
+		//esta flag indica se pode continuar ou nao o calculo do conjunto primeiro
 		boolean flag = false;
 		primeiro.addAll(p);
 		primeiro.remove(new Character('E'));
+		//se o conjunto primeiro para o primeiro caracter contem 'E' seta a flag para true
 		if (p.contains('E')){
 			flag = true;
 		}
+		
 		int n = s.length();
 		for (int i = 1; i < n; i++) {
+			//se nao pode continuar a execucao
 			if (!flag) break;
 			for (int j = 0; j < i-1; j++) {
+				//verifica se todos os primeiros do char 0 ate o char i-1 contem 'E'  
 				if (!primeiro(s.charAt(j)).contains('E')){
 					flag = false;
 				}
 			}
+			//se sim faz a primeiro = primeiro U primeiro(ci)-{E}
 			if (flag){
 				primeiro = uniao(primeiro,primeiro(s.charAt(i)));
 				primeiro.remove(new Character('E'));
 			}
 		}
+		//se todos possuem derivacao para E entao adiciona E ao conjunto primeiro
 		if (flag){
 			primeiro.add('E');
 		}

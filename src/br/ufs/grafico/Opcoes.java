@@ -78,9 +78,13 @@ public class Opcoes extends JPanel{
 					String texto = grammar_edit.getText();
 					if (!texto.contains(" ")){
 						if (!GramaticaMalFormadaException.isMalFormada(texto)){
+							try{
 							Gramatica g = new Gramatica(texto);
 							Main.automato = new Automato(g);
 							gerarTabelas();
+							}catch(StackOverflowError error){
+								JOptionPane.showMessageDialog(null, MensagensErros.MSG_GRAMATICAAMBIGUA,"ERROR", JOptionPane.ERROR_MESSAGE);
+							}
 						}else{
 							JOptionPane.showMessageDialog(null, MensagensErros.MSG_MALFORMADA,"ERROR", JOptionPane.ERROR_MESSAGE);
 						}

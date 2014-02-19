@@ -2,10 +2,11 @@ package br.ufs.funcional.gramatica;
 
 import java.util.ArrayList;
 
-/**
- * <b>Classe Gramatica</b>
- * @author Victor Ferreira Pereira
- * @version 1.0
+/*
+ * class Gramatica
+ * autor: Victor Ferreira Pereira
+ * 
+ * descricao: representacao de uma GLC(Gramatica Livre de Contexto).
  * 
  * */
 public class Gramatica {
