@@ -151,6 +151,14 @@ public class Tabela {
 		return primeiro;
 	}
 	
+	/*
+	 * contarChar
+	 * 
+	 * Dada uma string s e um char c, retorna a quantidade de vezes que esse char 
+	 * aparece em s.
+	 * 
+	 * */
+	
 	public int contarChar(String s, Character c){
 		int total = 0;
 		for (int i = 0; i < s.length(); i++) {
@@ -161,51 +169,87 @@ public class Tabela {
 		return total;
 	}
 	
+	/*
+	 * seguinte
+	 * 
+	 * calcula o conjunto dos elementos seguintes para um character c.
+	 * 
+	 * */
+	
 	public ArrayList<Character> seguinte(Character c){
 		ArrayList<Character> seguinte = new ArrayList<Character>();
+		//se c é variavel inicial adiciona $ ao conjunto seguinte.
 		if(gramatica.variavelInicial().equals(c)){
 			seguinte.add('$');
 		}
+		//pega todas as producoes em que c esta contido do lado direito
 		ArrayList<Producao> prod = gramatica.getContido(c);
+		
+		//para cada producao em que c esta contido do lado direito
 		for (int i = 0; i < prod.size(); i++) {
 			String producao = prod.get(i).getBehavior();
 			ArrayList<Character> p = new ArrayList<Character>();
+			/*caso 1:
+			 * 		se o caracter 'c' aparecer mais de 1 vez no lado direito, ou
+			 * 		seja, para c='S'(exemplo) a producao é do tipo: X->aSbS
+			 */
 			if(contarChar(producao, c)>=2){
+				//verifica se termina com 'c'
 				if(producao.endsWith(c.toString())){
 					if (!prod.get(i).getVariavel().equals(c))
+						//seguinte = seguinte(c) U seguinte(Variavel da producao)
 						seguinte = uniao(seguinte,seguinte(prod.get(i).getVariavel()));
 				}
+				//calcula-se o conjuto primeiro para o o caracter seguinte ao 'c' 
 				p.addAll(primeiro(producao.charAt(producao.indexOf(c)+1)));
-				
+				//se o caracter 'x' seguinte nao é terminal
 				if(!Producao.isTerminal(producao.charAt(producao.indexOf(c)+1))){
-					
+					//se 'x' deriva para 'E' adiciona E para o conjunto dos primeiros
 					if (gramatica.existe(new Producao(producao.charAt(producao.indexOf(c)+1)+"->E"))){
 						p.add('E');
 					}
 				}
+				//seguinte = seguinte U primeiros - {E}
 				seguinte = uniao(seguinte,p);
 				seguinte.remove(new Character('E'));
+				//E está contido nos primeiros
 				if (p.contains('E')){
 					if (!prod.get(i).getVariavel().equals(c))
+						//seguinte = seguinte(c) U seguinte(Variavel da producao)
 						seguinte = uniao(seguinte,seguinte(prod.get(i).getVariavel()));
 				}
 			}else{
 				if(producao.contains(c.toString())){
+					/*caso 2:
+					 * 		o caracter 'c' aparece apenas no final da producao, ou
+					 * 		seja, para c='S'(exemplo) a producao é do tipo: X->aS
+					 */
 					if(producao.endsWith(c.toString())){
 						if (!prod.get(i).getVariavel().equals(c)){
+							//seguinte = seguinte(c) U seguinte(Variavel da producao)
 							seguinte = uniao(seguinte,seguinte(prod.get(i).getVariavel()));
 						}
 					}else{
+						/*caso 3:
+						 * 		o caracter 'c' nao finaliza a producao, ou seja,
+						 * 		para c='S'(exemplo) a producao é do tipo: X->aSb
+						 */
+						
+						//calcula-se o conjuto primeiro para o o caracter seguinte ao 'c'
 						p.addAll(primeiro(producao.charAt(producao.indexOf(c)+1)));
+						//adiciona E ao conjunto primeiro se derivar para 'E'
 						if(!Producao.isTerminal(producao.charAt(producao.indexOf(c)+1))){
 							if (gramatica.existe(new Producao(producao.charAt(producao.indexOf(c)+1)+"->E"))){
 								p.add('E');
 							}
 						}
+						//seguinte = seguinte U primeiros - {E}
 						seguinte = uniao(seguinte,p);
 						seguinte.remove(new Character('E'));
+						//E está contido nos primeiros
 						if (p.contains('E')){
 							if (!prod.get(i).getVariavel().equals(c))
+								//seguinte = seguinte(c) U seguinte(Variavel da producao)
 								seguinte = uniao(seguinte,seguinte(prod.get(i).getVariavel()));
 						}
 					}
@@ -236,12 +280,6 @@ public class Tabela {
 			tabela.get(0).set(i, gramatica.getTerminais().get(i-1).toString());
 		}
 		tabela.get(0).set(gramatica.getTerminais().size()+1, "$");
-	}
-	
-	public void imprimir(ArrayList<ArrayList<String>> tabela){
-		for (int i = 0; i <= gramatica.getNaoTerminais().size(); i++) {
-			System.out.println(tabela.get(i).toString());
-		}
 	}
 	
 	public ArrayList<Character> variaveisE(){
