@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Pilha{
 
-	ArrayList<Object> pilha = new ArrayList<>();
+	ArrayList<Object> pilha = new ArrayList<Object>();
 	
 	public Pilha() {
 		// TODO Auto-generated constructor stub

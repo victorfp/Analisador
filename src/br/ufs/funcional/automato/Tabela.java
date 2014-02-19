@@ -1,18 +1,14 @@
 package br.ufs.funcional.automato;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-
 import br.ufs.funcional.gramatica.Gramatica;
 import br.ufs.funcional.gramatica.Producao;
 
 public class Tabela {
 
-	private ArrayList<ArrayList<String>> tabela = new ArrayList<>();
-	private ArrayList<ArrayList<Character>> primeiros = new ArrayList<>();
-	private ArrayList<ArrayList<Character>> seguintes = new ArrayList<>();
+	private ArrayList<ArrayList<String>> tabela = new ArrayList<ArrayList<String>>();
+	private ArrayList<ArrayList<Character>> primeiros = new ArrayList<ArrayList<Character>>();
+	private ArrayList<ArrayList<Character>> seguintes = new ArrayList<ArrayList<Character>>();
 	private Gramatica gramatica;
 	
 	public Tabela() {
@@ -29,9 +25,17 @@ public class Tabela {
 		return tabela;
 	}
 	
+	public ArrayList<ArrayList<Character>> getPrimeiros() {
+		return primeiros;
+	}
+	
+	public ArrayList<ArrayList<Character>> getSeguintes() {
+		return seguintes;
+	}
+	
 	public ArrayList<Character> uniao(ArrayList<Character> a, ArrayList<Character> b){
-		ArrayList<Character> r = new ArrayList<>();
-		ArrayList<Character> iguais = new ArrayList<>();
+		ArrayList<Character> r = new ArrayList<Character>();
+		ArrayList<Character> iguais = new ArrayList<Character>();
 		iguais.addAll(a);
 		iguais.retainAll(b);
 		r.addAll(a);
@@ -59,8 +63,8 @@ public class Tabela {
 	}
 	
 	public ArrayList<Character> primeiro(Character c){
-		ArrayList<Character> primeiro = new ArrayList<>();
-		ArrayList<Producao> prod = new ArrayList<>();
+		ArrayList<Character> primeiro = new ArrayList<Character>();
+		ArrayList<Producao> prod = new ArrayList<Producao>();
 		prod.addAll(gramatica.getProducoes(c));
 		boolean flag = false;
 		if (Producao.isTerminal(c)){
@@ -89,8 +93,7 @@ public class Tabela {
 	}
 	
 	public ArrayList<Character> primeiro(String s){
-		ArrayList<Character> primeiro = new ArrayList<>();
-		ArrayList<Producao> prod = new ArrayList<>();
+		ArrayList<Character> primeiro = new ArrayList<Character>();
 		ArrayList<Character> p = primeiro(s.charAt(0));
 		
 		boolean flag = false;
@@ -119,70 +122,66 @@ public class Tabela {
 		return primeiro;
 	}
 	
-	public ArrayList<Character> seguinte2(Character c){
-		ArrayList<Character> seguinte = new ArrayList<>();
-		ArrayList<Producao> prod = new ArrayList<>();
-		prod.addAll(gramatica.getProducoes(c));
-		
-		if (gramatica.variavelInicial().equals(c)){
-			seguinte.add('$');
-		}
-		
-		for (int i = 0; i < prod.size(); i++) {
-			String producao = prod.get(i).getBehavior();
-			for (int j = 0; j < producao.length(); j++) {
-				if (!Producao.isTerminal(producao.charAt(j))){
-					String w = producao.substring(j+1, producao.length());
-					ArrayList<Character> p = new ArrayList<>();
-					if (w.length() <= 1){
-						if (w.length() != 0){
-							p = primeiro(new Character(w.charAt(0)));
-						}
-					}else{
-						p = primeiro(w);
-					}
-					
-					seguinte = uniao(seguinte,p);
-					seguinte.remove(new Character('E'));
-					
-					if (p.contains('E')){
-						seguinte = uniao(seguinte, seguinte(prod.get(i).getVariavel()));
-					}
-				}
+	public int contarChar(String s, Character c){
+		int total = 0;
+		for (int i = 0; i < s.length(); i++) {
+			if(c.equals(s.charAt(i))){
+				total++;
 			}
 		}
-		
-		return seguinte;
+		return total;
 	}
-
 	
 	public ArrayList<Character> seguinte(Character c){
-		ArrayList<Character> seguinte = new ArrayList<>();
+		ArrayList<Character> seguinte = new ArrayList<Character>();
 		if(gramatica.variavelInicial().equals(c)){
 			seguinte.add('$');
 		}
-		ArrayList<Producao> prod = gramatica.getNaoProduz(c);
-		int index = gramatica.getNaoTerminais().indexOf(c);
+		ArrayList<Producao> prod = gramatica.getContido(c);
 		for (int i = 0; i < prod.size(); i++) {
 			String producao = prod.get(i).getBehavior();
-			ArrayList<Character> p = new ArrayList<>();
-			if (producao.contains(c.toString())){
+			ArrayList<Character> p = new ArrayList<Character>();
+			if(contarChar(producao, c)>=2){
 				if(producao.endsWith(c.toString())){
-					seguinte = uniao(seguinte,seguinte(prod.get(i).getVariavel()));
-				}else{
-					p.addAll(primeiro(producao.charAt(producao.indexOf(c)+1)));
-					if(!Producao.isTerminal(producao.charAt(producao.indexOf(c)+1))){
-						if (gramatica.existe(new Producao(producao.charAt(producao.indexOf(c)+1)+"->E"))){
-							p.add('E');
-						}
-					}
-					seguinte = uniao(seguinte,p);
-					seguinte.remove(new Character('E'));
-					if (p.contains('E')){
+					if (!prod.get(i).getVariavel().equals(c))
 						seguinte = uniao(seguinte,seguinte(prod.get(i).getVariavel()));
+				}
+				p.addAll(primeiro(producao.charAt(producao.indexOf(c)+1)));
+				
+				if(!Producao.isTerminal(producao.charAt(producao.indexOf(c)+1))){
+					
+					if (gramatica.existe(new Producao(producao.charAt(producao.indexOf(c)+1)+"->E"))){
+						p.add('E');
 					}
 				}
-			}	
+				seguinte = uniao(seguinte,p);
+				seguinte.remove(new Character('E'));
+				if (p.contains('E')){
+					if (!prod.get(i).getVariavel().equals(c))
+						seguinte = uniao(seguinte,seguinte(prod.get(i).getVariavel()));
+				}
+			}else{
+				if(producao.contains(c.toString())){
+					if(producao.endsWith(c.toString())){
+						if (!prod.get(i).getVariavel().equals(c)){
+							seguinte = uniao(seguinte,seguinte(prod.get(i).getVariavel()));
+						}
+					}else{
+						p.addAll(primeiro(producao.charAt(producao.indexOf(c)+1)));
+						if(!Producao.isTerminal(producao.charAt(producao.indexOf(c)+1))){
+							if (gramatica.existe(new Producao(producao.charAt(producao.indexOf(c)+1)+"->E"))){
+								p.add('E');
+							}
+						}
+						seguinte = uniao(seguinte,p);
+						seguinte.remove(new Character('E'));
+						if (p.contains('E')){
+							if (!prod.get(i).getVariavel().equals(c))
+								seguinte = uniao(seguinte,seguinte(prod.get(i).getVariavel()));
+						}
+					}
+				}
+			}
 		}
 		
 		return seguinte;
@@ -191,7 +190,7 @@ public class Tabela {
 	public void iniciarTabela(ArrayList<ArrayList<String>> tabela){
 		//instaciano a tabela
 		for (int i = 0; i <= gramatica.getNaoTerminais().size(); i++) {
-			ArrayList<String> linha = new ArrayList<>();
+			ArrayList<String> linha = new ArrayList<String>();
 			for (int j = 0; j <= gramatica.getTerminais().size()+1; j++) {
 				linha.add(null);
 			}
@@ -217,7 +216,7 @@ public class Tabela {
 	}
 	
 	public ArrayList<Character> variaveisE(){
-		ArrayList<Character> r = new ArrayList<>();
+		ArrayList<Character> r = new ArrayList<Character>();
 		for (int i = 0; i < gramatica.getNaoTerminais().size(); i++) {
 			if (gramatica.existe(new Producao(gramatica.getNaoTerminais().get(i)+"->E"))){
 				r.add(gramatica.getNaoTerminais().get(i));
@@ -230,24 +229,23 @@ public class Tabela {
 		for (int i = 0; i < gramatica.getNaoTerminais().size(); i++) {
 			primeiros.add(primeiro(gramatica.getNaoTerminais().get(i)));
 		}
-		
 		ArrayList<Character> eps = variaveisE();
 		for (int i = 0; i < eps.size(); i++) {
 			primeiros.get(gramatica.getNaoTerminais().indexOf(eps.get(i))).add('E');
 		}
-		
-		System.out.println("primeiros: "+primeiros);
 	}
 	
 	public void computaSeguintes(){
 		for (int i = 0; i < gramatica.getNaoTerminais().size(); i++) {
 			seguintes.add(seguinte(gramatica.getNaoTerminais().get(i)));
 		}
-		System.out.println("seguintes: "+seguintes);
 	}
 	
 	public int indexT(Character c){
-		return gramatica.getTerminais().indexOf(c)+1;
+		if (!c.equals('$'))
+			return gramatica.getTerminais().indexOf(c)+1;
+		else
+			return gramatica.getTerminais().size()+1;
 	}
 	
 	public int indexNT(Character c){
@@ -260,21 +258,32 @@ public class Tabela {
 		criarTabela(tabela);
 		computaPrimeiros();
 		computaSeguintes();
-		ArrayList<Producao> prod = new ArrayList<>();
+		ArrayList<Producao> prod = new ArrayList<Producao>();
 		prod.addAll(gramatica.getProducoes());
-		for (int i = 0; i < prod.size(); i++) {
+		for (int i = 0; i < prod.size();i++) {
 			Character var = prod.get(i).getVariavel();
 			int index = gramatica.getNaoTerminais().indexOf(var);
-			ArrayList<Character> primeiro = primeiros.get(index);
+			ArrayList<Character> primeiro = primeiro(prod.get(i).getBehavior());
 			for (int j = 0; j < primeiro.size(); j++) {
-				if (!primeiro.equals('E')){
-					int indexT = indexT(primeiro.get(j));
-					tabela.get(index+1).set(indexT, prod.get(i).getProducao());
+				if (!primeiro.get(j).equals('E')){
+					if (tabela.get(index+1).get(indexT(primeiro.get(j))) == null){
+						tabela.get(index+1).set(indexT(primeiro.get(j)), prod.get(i).getProducao());
+					}
 				}
-					
+			}
+			if (prod.get(i).getProducao().equals(var+"->E")){
+				ArrayList<Character> seguinte = seguintes.get(index);
+				for (int j = 0; j < seguinte.size(); j++) {
+					tabela.get(index+1).set(indexT(seguinte.get(j)), prod.get(i).getProducao());
+				}
+			}else{
+				if (primeiro.contains('E')){
+					ArrayList<Character> seguinte = seguintes.get(index);
+					for (int j = 0; j < seguinte.size(); j++) {
+						tabela.get(index+1).set(indexT(seguinte.get(j)), prod.get(i).getProducao());
+					}
+				}
 			}
 		}
-		imprimir(tabela);
-		
 	}
 }

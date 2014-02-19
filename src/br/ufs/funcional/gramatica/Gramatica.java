@@ -2,12 +2,18 @@ package br.ufs.funcional.gramatica;
 
 import java.util.ArrayList;
 
+/**
+ * <b>Classe Gramatica</b>
+ * @author Victor Ferreira Pereira
+ * @version 1.0
+ * 
+ * */
 public class Gramatica {
 
 	//atributos
-	private ArrayList<Character> nao_terminais = new ArrayList<>();
-	private ArrayList<Character> terminais = new ArrayList<>();
-	private ArrayList<Producao> producoes = new ArrayList<>();
+	private ArrayList<Character> nao_terminais = new ArrayList<Character>();
+	private ArrayList<Character> terminais = new ArrayList<Character>();
+	private ArrayList<Producao> producoes = new ArrayList<Producao>();
 	
 	public Gramatica() {
 		// TODO Auto-generated constructor stub
@@ -30,7 +36,7 @@ public class Gramatica {
 	}
 	
 	public void coletaTerminais(){
-		ArrayList<Character> iguais = new ArrayList<>();
+		ArrayList<Character> iguais = new ArrayList<Character>();
 		for (int i = 0; i < producoes.size(); i++) {
 			iguais.addAll(terminais);
 			iguais.retainAll(producoes.get(i).getTerminais());
@@ -50,7 +56,7 @@ public class Gramatica {
 	}
 	
 	public ArrayList<Producao> getProducoes(Character c) {
-		ArrayList<Producao> produz = new ArrayList<>();
+		ArrayList<Producao> produz = new ArrayList<Producao>();
 		for (int i = 0; i < producoes.size(); i++) {
 			if (producoes.get(i).getVariavel().equals(c)){
 				produz.add(producoes.get(i));
@@ -59,8 +65,18 @@ public class Gramatica {
 		return produz;
 	}
 	
+	public ArrayList<Producao> getContido(Character c) {
+		ArrayList<Producao> produz = new ArrayList<Producao>();
+		for (int i = 0; i < producoes.size(); i++) {
+			if (producoes.get(i).getBehavior().contains(c.toString())){
+				produz.add(producoes.get(i));
+			}
+		}
+		return produz;
+	}
+	
 	public ArrayList<Producao> getNaoProduz(Character c) {
-		ArrayList<Producao> produz = new ArrayList<>();
+		ArrayList<Producao> produz = new ArrayList<Producao>();
 		for (int i = 0; i < producoes.size(); i++) {
 			if (!producoes.get(i).getVariavel().equals(c)){
 				produz.add(producoes.get(i));
