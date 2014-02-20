@@ -321,29 +321,41 @@ public class Tabela {
 	
 	
 	public void construirTabela(){
+		//instancia a tabela e seta todos para null
 		iniciarTabela(tabela);
+		//adiciona os terminais na linha 0 e as variaveis na coluna 0
 		criarTabela(tabela);
+		//calcula os conjuntos primeiros e sequencia para as variaveis.
 		computaPrimeiros();
 		computaSeguintes();
 		ArrayList<Producao> prod = new ArrayList<Producao>();
+		//pega todas as producoes da GLC
 		prod.addAll(gramatica.getProducoes());
+		//para cada producao adiciono essa producao na tabela de acordo com primeiros
+		//e seguintes
 		for (int i = 0; i < prod.size();i++) {
 			Character var = prod.get(i).getVariavel();
 			int index = gramatica.getNaoTerminais().indexOf(var);
+			//calcula os primeiros para o lado direito da producao
 			ArrayList<Character> primeiro = primeiro(prod.get(i).getBehavior());
 			for (int j = 0; j < primeiro.size(); j++) {
 				if (!primeiro.get(j).equals('E')){
 					if (tabela.get(index+1).get(indexT(primeiro.get(j))) == null){
+						//setando o valor da tabela
 						tabela.get(index+1).set(indexT(primeiro.get(j)), prod.get(i).getProducao());
 					}
 				}
 			}
+			//se é uma producao do tipo X->E entao adiciono essa producao para todos
+			//os elementos seguintes de X
 			if (prod.get(i).getProducao().equals(var+"->E")){
 				ArrayList<Character> seguinte = seguintes.get(index);
 				for (int j = 0; j < seguinte.size(); j++) {
 					tabela.get(index+1).set(indexT(seguinte.get(j)), prod.get(i).getProducao());
 				}
 			}else{
+				//se p contem E entao adiciono essa producao para todos
+				//os elementos seguintes de X
 				if (primeiro.contains('E')){
 					ArrayList<Character> seguinte = seguintes.get(index);
 					for (int j = 0; j < seguinte.size(); j++) {
