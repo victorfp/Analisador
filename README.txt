@@ -33,6 +33,7 @@ lisador.jar.
    
    IMPORTANTE: As ERs devem seguir o padrão especificado.
 	       Operacoes suportadas: concatenacao(.), uniao(+) e Fecho-kleene ou estrela(*).
+	       Alfabeto: {0,1}.
 
    Passo 2: Inserir Palavras para validacao
 	
